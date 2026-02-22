@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>建筑外围护结构 · 热阻R值选择器</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(145deg, #f6f9fc 0%, #eef2f5 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1.5rem;
+        }
+
+        .card-panel {
+            max-width: 1300px;
+            width: 100%;
+            background: rgba(255,255,255,0.75);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 2.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 20, 40, 0.3), inset 0 1px 2px rgba(255,255,255,0.8);
+            padding: 2rem 2rem 2.5rem;
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            background: linear-gradient(145deg, #1B3B4F, #0F2A38);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .subhead {
+            font-size: 1rem;
+            color: #2c4b60;
+            margin-bottom: 2rem;
+            border-left: 4px solid #3b8ba0;
+            padding-left: 1.2rem;
+            background: #e6f0f4;
+            border-radius: 0 1rem 1rem 0;
+            width: fit-content;
+            padding: 0.6rem 1.8rem 0.6rem 1.2rem;
+            font-weight: 400;
+        }
+
+        /* 气候按钮组 */
+        .climate-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-bottom: 2.8rem;
+            justify-content: center;
+        }
+
+        .climate-btn {
+            background: white;
+            border: 1px solid #cbdae3;
+            color: #1a3b47;
+            padding: 0.7rem 1.8rem;
+            border-radius: 40px;
+            font-size: 1rem;
+            font-weight: 550;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 8px rgba(0,20,30,0.05);
+            backdrop-filter: blur(4px);
+        }
+
+        .climate-btn:hover {
+            background: #e1f0f7;
+            border-color: #3f8ca3;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 18px -8px #2b6c84;
+        }
+
+        .climate-btn.active {
+            background: #1a4b5e;
+            border-color: #0e3340;
+            color: white;
+            box-shadow: 0 10px 15px -5px #164c61;
+        }
+
+        /* 三列卡片 */
+        .grid-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .part-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 2rem;
+            padding: 1.8rem 1.5rem 2rem;
+            box-shadow: 0 20px 30px -12px rgba(0, 40, 50, 0.2);
+            border: 1px solid rgba(255,255,255,0.7);
+            transition: 0.15s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .part-card:hover {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 25px 35px -12px #1d4f63;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header h2 {
+            font-size: 1.7rem;
+            font-weight: 550;
+            color: #0e3b48;
+            letter-spacing: -0.01em;
+        }
+
+        .icon {
+            font-size: 2rem;
+            line-height: 1;
+        }
+
+        .rvalue-large {
+            font-size: 3.2rem;
+            font-weight: 650;
+            color: #0a2f3c;
+            line-height: 1;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: baseline;
+            gap: 0.3rem;
+        }
+
+        .rvalue-large small {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #3f6372;
+            margin-left: 0.2rem;
+        }
+
+        .metric-row {
+            font-size: 1.1rem;
+            color: #2c5770;
+            margin-bottom: 1rem;
+            background: #dcf0f7;
+            padding: 0.3rem 1rem;
+            border-radius: 30px;
+            display: inline-block;
+            align-self: flex-start;
+        }
+
+        .metric-row span {
+            font-weight: 650;
+            color: #0c4a5e;
+        }
+
+        /* 滑块 */
+        .slider-container {
+            margin: 1.2rem 0 0.8rem;
+        }
+
+        input[type=range] {
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #b0d3df 0%, #3f8ba3 100%);
+            border-radius: 20px;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 4px 10px #0a3440;
+            border: 2px solid #1c6279;
+            cursor: pointer;
+            margin-top: -8px;
+            transition: 0.1s;
+        }
+
+        input[type=range]::-webkit-slider-thumb:hover { background: #e9f7ff; transform: scale(1.15); }
+        input[type=range]::-moz-range-thumb {
+            width: 24px; height: 24px; background: white; border: 2px solid #1c6279; border-radius: 50%; cursor: pointer;
+        }
+
+        .range-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: #3f6575;
+            margin-top: 0.4rem;
+        }
+
+        /* 进度条可视化 */
+        .progress-wrapper {
+            margin: 1rem 0 0.4rem;
+        }
+
+        .progress-bg {
+            width: 100%;
+            height: 12px;
+            background: #d0e2e9;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 40%;
+            background: linear-gradient(90deg, #43aa8b, #2897b0);
+            border-radius: 30px;
+            transition: width 0.15s ease;
+        }
+
+        .minmax-note {
+            font-size: 0.85rem;
+            color: #346477;
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.6rem;
+            border-top: 1px dashed #a6c4d2;
+            padding-top: 0.6rem;
+        }
+
+        .footer-note {
+            margin-top: 2.8rem;
+            text-align: center;
+            color: #3c687b;
+            font-size: 0.9rem;
+            background: #deedf3;
+            padding: 0.8rem 1.5rem;
+            border-radius: 60px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+            backdrop-filter: blur(4px);
+            border: 1px solid white;
+        }
+
+        .footer-note strong {
+            color: #0e4b5e;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+<div class="card-panel">
+    <h1>
+        <span>🏛️</span> 外围护结构热阻 · R值选择
+    </h1>
+    <div class="subhead">
+        ⚡ 点击气候带快速预设 · 拖动滑块微调 · 同时显示英制 & 公制热阻
+    </div>
+
+    <!-- 气候预设按钮 (5个) -->
+    <div class="climate-bar" id="climateBar">
+        <button class="climate-btn" data-preset="hot">🔥 炎热 (Hot)</button>
+        <button class="climate-btn" data-preset="mild">🌤️ 温和 (Mild)</button>
+        <button class="climate-btn" data-preset="cold">❄️ 寒冷 (Cold)</button>
+        <button class="climate-btn" data-preset="severe">⛄ 严寒 (Severe)</button>
+        <button class="climate-btn" data-preset="arctic">🧊 极寒 (Arctic)</button>
+    </div>
+
+    <!-- 三个主要构件卡片 -->
+    <div class="grid-cards">
+        <!-- 墙体卡片 -->
+        <div class="part-card">
+            <div class="card-header">
+                <span class="icon">🧱</span>
+                <h2>外墙</h2>
+            </div>
+            <div class="rvalue-large">
+                <span id="wallRvalue">21.0</span> <small>ft²·°F·h/Btu</small>
+            </div>
+            <div class="metric-row">
+                <span id="wallMetric">3.70</span> m²·K/W
+            </div>
+            <div class="slider-container">
+                <input type="range" id="wallSlider" min="5" max="50" value="21" step="0.1">
+                <div class="range-labels">
+                    <span>R-5</span>
+                    <span>R-50</span>
+                </div>
+            </div>
+            <div class="progress-wrapper">
+                <div class="progress-bg">
+                    <div class="progress-fill" id="wallProgressFill" style="width: 35.5%;"></div>
+                </div>
+            </div>
+            <div class="minmax-note">
+                <span>⛓️ 最低 5.0</span>
+                <span>🔹 当前  <span id="wallCurrentMinMax">21.0</span></span>
+                <span>🔺 最高 50.0</span>
+            </div>
+        </div>
+
+        <!-- 屋顶卡片 -->
+        <div class="part-card">
+            <div class="card-header">
+                <span class="icon">🏠</span>
+                <h2>屋顶</h2>
+            </div>
+            <div class="rvalue-large">
+                <span id="roofRvalue">38.0</span> <small>ft²·°F·h/Btu</small>
+            </div>
+            <div class="metric-row">
+                <span id="roofMetric">6.69</span> m²·K/W
+            </div>
+            <div class="slider-container">
+                <input type="range" id="roofSlider" min="10" max="80" value="38" step="0.1">
+                <div class="range-labels">
+                    <span>R-10</span>
+                    <span>R-80</span>
+                </div>
+            </div>
+            <div class="progress-wrapper">
+                <div class="progress-bg">
+                    <div class="progress-fill" id="roofProgressFill" style="width: 40.0%;"></div>
+                </div>
+            </div>
+            <div class="minmax-note">
+                <span>⛓️ 最低 10.0</span>
+                <span>🔹 当前 <span id="roofCurrentMinMax">38.0</span></span>
+                <span>🔺 最高 80.0</span>
+            </div>
+        </div>
+
+        <!-- 地板/楼板卡片 -->
+        <div class="part-card">
+            <div class="card-header">
+                <span class="icon">🪵</span>
+                <h2>地板</h2>
+            </div>
+            <div class="rvalue-large">
+                <span id="floorRvalue">19.0</span> <small>ft²·°F·h/Btu</small>
+            </div>
+            <div class="metric-row">
+                <span id="floorMetric">3.35</span> m²·K/W
+            </div>
+            <div class="slider-container">
+                <input type="range" id="floorSlider" min="5" max="50" value="19" step="0.1">
+                <div class="range-labels">
+                    <span>R-5</span>
+                    <span>R-50</span>
+                </div>
+            </div>
+            <div class="progress-wrapper">
+                <div class="progress-bg">
+                    <div class="progress-fill" id="floorProgressFill" style="width: 31.1%;"></div>
+                </div>
+            </div>
+            <div class="minmax-note">
+                <span>⛓️ 最低 5.0</span>
+                <span>🔹 当前 <span id="floorCurrentMinMax">19.0</span></span>
+                <span>🔺 最高 50.0</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-note">
+        <strong>⚙️ 交互提示：</strong> 上方气候按钮可设定推荐起始值，拖动滑块精细调整。
+        热阻 R 值(英制)越大，保温越好。 公制单位 m²·K/W = 英制 R / 5.678
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ---------- 获取DOM元素 ----------
+        const wallSlider = document.getElementById('wallSlider');
+        const roofSlider = document.getElementById('roofSlider');
+        const floorSlider = document.getElementById('floorSlider');
+
+        const wallRvalue = document.getElementById('wallRvalue');
+        const roofRvalue = document.getElementById('roofRvalue');
+        const floorRvalue = document.getElementById('floorRvalue');
+
+        const wallMetric = document.getElementById('wallMetric');
+        const roofMetric = document.getElementById('roofMetric');
+        const floorMetric = document.getElementById('floorMetric');
+
+        const wallProgress = document.getElementById('wallProgressFill');
+        const roofProgress = document.getElementById('roofProgressFill');
+        const floorProgress = document.getElementById('floorProgressFill');
+
+        // 卡片里显示当前值的辅助span (minmax区域)
+        const wallCurrentMin = document.getElementById('wallCurrentMinMax');
+        const roofCurrentMin = document.getElementById('roofCurrentMinMax');
+        const floorCurrentMin = document.getElementById('floorCurrentMinMax');
+
+        // 气候按钮
+        const climateBtns = document.querySelectorAll('.climate-btn');
+
+        // ---------- 气候预设数据 (英制 R值) ----------
+        const presets = {
+            hot:   { wall: 13.0, roof: 25.0, floor: 10.0 },
+            mild:  { wall: 15.0, roof: 30.0, floor: 13.0 },
+            cold:  { wall: 21.0, roof: 38.0, floor: 19.0 },
+            severe:{ wall: 25.0, roof: 49.0, floor: 25.0 },
+            arctic:{ wall: 35.0, roof: 70.0, floor: 35.0 }
+        };
+
+        // ---------- 通用更新函数：根据滑块当前值刷新UI ----------
+        function updateAllFromSliders() {
+            // 墙体
+            let wVal = parseFloat(wallSlider.value);
+            let wMin = parseFloat(wallSlider.min);
+            let wMax = parseFloat(wallSlider.max);
+            wallRvalue.textContent = wVal.toFixed(1);
+            wallMetric.textContent = (wVal / 5.678).toFixed(2);
+            // 进度条宽度百分比
+            let wPercent = ((wVal - wMin) / (wMax - wMin)) * 100;
+            wallProgress.style.width = wPercent + '%';
+            if (wallCurrentMin) wallCurrentMin.textContent = wVal.toFixed(1);
+
+            // 屋顶
+            let rVal = parseFloat(roofSlider.value);
+            let rMin = parseFloat(roofSlider.min);
+            let rMax = parseFloat(roofSlider.max);
+            roofRvalue.textContent = rVal.toFixed(1);
+            roofMetric.textContent = (rVal / 5.678).toFixed(2);
+            let rPercent = ((rVal - rMin) / (rMax - rMin)) * 100;
+            roofProgress.style.width = rPercent + '%';
+            if (roofCurrentMin) roofCurrentMin.textContent = rVal.toFixed(1);
+
+            // 地板
+            let fVal = parseFloat(floorSlider.value);
+            let fMin = parseFloat(floorSlider.min);
+            let fMax = parseFloat(floorSlider.max);
+            floorRvalue.textContent = fVal.toFixed(1);
+            floorMetric.textContent = (fVal / 5.678).toFixed(2);
+            let fPercent = ((fVal - fMin) / (fMax - fMin)) * 100;
+            floorProgress.style.width = fPercent + '%';
+            if (floorCurrentMin) floorCurrentMin.textContent = fVal.toFixed(1);
+        }
+
+        // ---------- 应用预设 (同时会更新滑块值) ----------
+        function applyPreset(presetKey) {
+            const vals = presets[presetKey];
+            if (!vals) return;
+            wallSlider.value = vals.wall;
+            roofSlider.value = vals.roof;
+            floorSlider.value = vals.floor;
+            updateAllFromSliders();   // 刷新数字、进度条
+        }
+
+        // ---------- 高亮当前按钮 (移除其他active) ----------
+        function setActiveButton(presetKey) {
+            climateBtns.forEach(btn => {
+                const btnPreset = btn.getAttribute('data-preset');
+                if (btnPreset === presetKey) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        // ---------- 给所有气候按钮绑定事件 ----------
+        climateBtns.forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                const preset = this.getAttribute('data-preset');
+                applyPreset(preset);
+                setActiveButton(preset);
+            });
+        });
+
+        // ---------- 滑块实时监听 ----------
+        wallSlider.addEventListener('input', updateAllFromSliders);
+        roofSlider.addEventListener('input', updateAllFromSliders);
+        floorSlider.addEventListener('input', updateAllFromSliders);
+
+        // ---------- 页面初始化：默认寒冷(cold)高亮且应用数值 ----------
+        window.addEventListener('DOMContentLoaded', function() {
+            // 默认预设 'cold'
+            applyPreset('cold');
+            setActiveButton('cold');
+        });
+
+        // 额外确保手动修改滑块时，不改变按钮高亮（但无所谓，高亮仅用于指示上次点击的预设）
+        // 但为了视觉一致性，也可以不做额外处理。当手动拖动后，按钮高亮可能依然留在之前的气候上，这符合预期：提示上次预设值。
+        // 如果希望拖动后高亮取消，可增加以下逻辑：但会失去预设指示，不太必要。保持当前逻辑。
+
+        // 附加：在更新时也同步 minmax 里的当前值（已做），另外解决初始进度条精度问题 (已在html内写style，但会被覆盖)
+        // 确保初始调用一次 (但applyPreset里已经调用，并且DOMContentLoaded会触发)
+        // 但以防万一，再调用一次。
+        setTimeout(() => {
+            // 确保所有元素渲染后数值正确
+            updateAllFromSliders();
+        }, 10);
+    })();
+</script>
+<!-- 注：部分内联style中的进度条初始宽度会被脚本覆盖，无需担心 -->
+</body>
+</html>
