@@ -4,35 +4,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>电路演示</title>
+    <title>热阻值 (R值) 演示</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
     <header>
-        <h1>串并联电路演示</h1>
+        <h1>热阻值 (R值) 演示</h1>
     </header>
 
     <main>
         <section id="circuit-display">
-            <svg id="circuit-svg" width="600" height="400"></svg>
+            <svg id="thermal-resistance-svg" width="600" height="400"></svg>
         </section>
 
         <section id="explanation">
-            <h2>电路说明</h2>
-            <p id="text-description">串联电路是将电阻一个接一个串联在一起，电流顺序通过每个电阻。并联电路是多个电阻连接在相同的电压源两端，使电流可分别通过每个电阻。</p>
+            <h2>热阻值 (R值) 说明</h2>
+            <p id="text-description">
+                热阻值（R值）是评估材料在热传导过程中隔热性能的一个重要指标。R值越高，意味着材料对热的隔离能力越强。计算公式为：
+            </p>
         </section>
 
         <section id="formula">
             <h2>公式</h2>
-            <p id="circuit-formula">串联电路: <b>R = R1 + R2 + ...</b><br>并联电路: <b>1/R = 1/R1 + 1/R2 + ...</b></p>
-        </section>
-
-        <section id="ai-helper">
-            <h2>AI 助教</h2>
-            <input type="text" id="user-question" placeholder="请输入您的问题...">
-            <button id="ask-button">提问</button>
-            <p id="ai-response"></p>
+            <p id="thermal-resistance-formula">
+                <b>R = ΔT / Q</b><br>
+                其中，ΔT 为温差，Q 为热流量。
+            </p>
         </section>
     </main>
 

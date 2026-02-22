@@ -1,45 +1,43 @@
 // script.js
 
-const svgContainer = document.getElementById('circuit-svg');
+const svgContainer = document.getElementById('thermal-resistance-svg');
 
-// 绘制串联电路 SVG 示例
-function drawSeriesCircuit() {
+// 绘制热阻值的 SVG 示例
+function drawThermalResistance() {
     svgContainer.innerHTML = `
-        <line x1="50" y1="100" x2="150" y2="100" stroke="black" stroke-width="2" />
-        <circle cx="50" cy="100" r="15" fill="red" />
-        <circle cx="150" cy="100" r="15" fill="red" />
-        <text x="50" y="95" font-size="12" text-anchor="middle">R1</text>
-        <text x="150" y="95" font-size="12" text-anchor="middle">R2</text>
-        <text x="100" y="140" font-size="16" fill="black">串联电路</text>
+        <rect x="50" y="60" width="200" height="20" fill="lightblue" />
+        <text x="150" y="55" font-size="16" text-anchor="middle">材料层 (R)</text>
+        <line x1="50" y1="90" x2="50" y2="150" stroke="black" stroke-width="2" />
+        <line x1="250" y1="90" x2="250" y2="150" stroke="black" stroke-width="2" />
+        <text x="20" y="120" font-size="16">热源</text>
+        <text x="280" y="120" font-size="16">环境</text>
+        <text x="150" y="180" font-size="20" fill="black">热阻值 (R 值)</text>
     `;
-    animateCircuit();
+    animateHeatFlow();
 }
 
 // 动画效果
-function animateCircuit() {
-    const resistors = document.querySelectorAll('circle');
-    resistors.forEach((resistor, index) => {
-        // 简单的动画效果
-        resistor.setAttribute('transform', 'scale(1.2)');
-        setTimeout(() => {
-            resistor.setAttribute('transform', 'scale(1)');
-        }, 500 + index * 100);
-    });
+function animateHeatFlow() {
+    const rect = document.querySelector('rect');
+    const flowLine = svgContainer.appendChild(document.createElementNS('http://www.w3.org/2000/svg', 'line'));
+    
+    flowLine.setAttribute('x1', '150');
+    flowLine.setAttribute('y1', '90');
+    flowLine.setAttribute('x2', '150');
+    flowLine.setAttribute('y2', '150');
+    flowLine.setAttribute('stroke', 'red');
+    flowLine.setAttribute('stroke-width', '2');
+
+    let posY = 90;
+    const interval = setInterval(() => {
+        if (posY > 150) {
+            clearInterval(interval);
+            return;
+        }
+        flowLine.setAttribute('y2', posY);
+        posY += 5;
+    }, 100);
 }
 
-// AI 助教
-document.getElementById('ask-button').addEventListener('click', function() {
-    const question = document.getElementById('user-question').value;
-    let response = "";
-    if (question.includes("串联")) {
-        response = "串联电路的总电阻是各电阻的总和。";
-    } else if (question.includes("并联")) {
-        response = "并联电路的总电阻是各电阻的倒数之和。";
-    } else {
-        response = "抱歉，我无法理解这个问题。";
-    }
-    document.getElementById('ai-response').innerText = response;
-});
-
 // 初始调用
-drawSeriesCircuit();
+drawThermalResistance();
