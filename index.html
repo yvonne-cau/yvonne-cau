@@ -1,11 +1,43 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh">
+
 <head>
-    <title>我的 GitHub Pages 站点</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>电路演示</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
-    <h1>Hello, World!</h1>
-    <p>这是我的个人网站。</p>
+    <header>
+        <h1>串并联电路演示</h1>
+    </header>
+
+    <main>
+        <section id="circuit-display">
+            <!-- SVG电路图显示区域 -->
+            <svg id="circuit-svg" width="600" height="400"></svg>
+        </section>
+
+        <section id="explanation">
+            <h2>电路说明</h2>
+            <p id="text-description">这里会有关于串并联电路的详细说明...</p>
+        </section>
+
+        <section id="formula">
+            <h2>公式</h2>
+            <p id="circuit-formula">串联电路: <b>R = R1 + R2 + ...</b><br>并联电路: <b>1/R = 1/R1 + 1/R2 + ...</b></p>
+        </section>
+
+        <section id="ai-helper">
+            <h2>AI 助教</h2>
+            <input type="text" id="user-question" placeholder="请输入您的问题...">
+            <button id="ask-button">提问</button>
+            <p id="ai-response"></p>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
 </body>
+
 </html>
-添加 index.html
